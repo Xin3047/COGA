@@ -1,4 +1,5 @@
 # Generated experiment outputs and local artifacts
+/data/
 runs/
 outputs/
 results/

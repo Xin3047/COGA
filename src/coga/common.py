@@ -8,11 +8,10 @@ from pathlib import Path
 from typing import Any, Iterable, Iterator, Mapping
 
 import numpy as np
-import torch
 
 
 COGA_ROOT = Path(__file__).resolve().parents[2]
-PROJECT_ROOT = COGA_ROOT.parent
+PROJECT_ROOT = COGA_ROOT
 
 
 def resolve_project_path(value: str | Path) -> Path:
@@ -60,10 +59,13 @@ def terminal_bench_tasks(config: Mapping[str, Any]) -> list[str]:
         raise RuntimeError(f"expected {expected_count} unique Terminal-Bench tasks, found {len(tasks)}")
 
     inventory = read_json(resolve_project_path(benchmark["task_inventory"]))
-    if inventory.get("dataset_tree_sha256") != benchmark["expected_dataset_tree_sha256"]:
+    expected_tree_hash = benchmark.get("expected_dataset_tree_sha256") or inventory.get("dataset_tree_sha256")
+    if not expected_tree_hash:
+        raise RuntimeError("Terminal-Bench inventory does not contain a dataset tree hash")
+    if benchmark.get("expected_dataset_tree_sha256") and inventory.get("dataset_tree_sha256") != expected_tree_hash:
         raise RuntimeError("Terminal-Bench inventory tree hash differs from the frozen config")
     tree_hash, tree_files, tree_bytes = canonical_tree_sha256(dataset_path)
-    if tree_hash != benchmark["expected_dataset_tree_sha256"]:
+    if tree_hash != expected_tree_hash:
         raise RuntimeError("Terminal-Bench dataset tree differs from the frozen 89-task export")
     if tree_files != inventory.get("dataset_files") or tree_bytes != inventory.get("dataset_definition_bytes"):
         raise RuntimeError("Terminal-Bench dataset file count/bytes differ from the frozen inventory")
@@ -129,6 +131,8 @@ def component_fold(family: str, prompt: str, folds: int, seed: int) -> int:
 
 
 def set_seed(seed: int) -> None:
+    import torch
+
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

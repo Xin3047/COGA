@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this implementation, cite COGA and the upstream RST paper/datasets."
+title: "COGA: Contrastive Outcome Gradient Alignment"
+type: software
+version: 0.1.0
+date-released: 2026-08-30
+authors:
+  - name: Xin3047
+repository-code: "https://github.com/Xin3047/COGA"
+url: "https://github.com/Xin3047/COGA"
+license: Apache-2.0

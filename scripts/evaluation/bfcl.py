@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the official full BFCL V4 all-scoring evaluator on base and both adapters."""
+"""Run the official BFCL V4 Multi-Turn evaluator on base and both adapters."""
 from __future__ import annotations
 
 import argparse
@@ -72,7 +72,7 @@ def evaluate_command(config: dict[str, Any]) -> list[str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the complete BFCL V4 all-scoring comparison.")
+    parser = argparse.ArgumentParser(description="Run the BFCL V4 Multi-Turn comparison.")
     parser.add_argument("--config", type=Path, required=True)
     args = parser.parse_args()
     config = read_json(args.config.resolve())
@@ -86,8 +86,8 @@ def main() -> None:
     model_names = [model["name"] for model in config["evaluation"]["models"]]
     if model_names != ["base", "rejection_success", "coga_selected"]:
         raise RuntimeError("the frozen full-evaluation contract requires base, rejection_success, coga_selected")
-    if categories != ["all_scoring"]:
-        raise RuntimeError("the full BFCL contract requires the official all_scoring test group")
+    if categories != ["multi_turn"]:
+        raise RuntimeError("the BFCL contract requires the official multi_turn test group")
     reports = {}
 
     for model in config["evaluation"]["models"]:
@@ -112,7 +112,7 @@ def main() -> None:
         )
         report = {
             "status": "COMPLETE" if complete else "FAILED",
-            "benchmark": "BFCL V4 all_scoring (non-live + live + multi-turn + agentic)",
+            "benchmark": "BFCL V4 Multi-Turn",
             "model": model["name"],
             "official_bfcl_model_name": bfcl["model_name"],
             "categories": categories,

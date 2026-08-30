@@ -1,0 +1,11 @@
+.git
+.github
+.venv
+/data
+/models
+/runs
+/outputs
+/results
+/artifacts
+__pycache__
+*.pyc

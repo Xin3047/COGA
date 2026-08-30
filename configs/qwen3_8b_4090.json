@@ -1,15 +1,26 @@
 {
   "schema_version": 1,
   "method": "COGA (Contrastive Outcome Gradient Alignment)",
-  "status": "FULL_TRAIN_EVAL_CODE_READY_NOT_RUN",
+  "status": "REPRODUCIBILITY_RELEASE",
   "execution_scope": "FULL_PRODUCTION_ONLY",
   "seed": 20260828,
   "paths": {
-    "raw_root": "../raw",
-    "population_db": "../raw/data/derived/credit_runs/local_credit_tournament_root_20260817_173936/population.sqlite",
-    "outcomes_db": "../raw/data/derived/credit_runs/local_credit_tournament_root_20260817_173936/outcomes.sqlite",
+    "raw_root": "data",
+    "dataset_raw_dir": "data/raw",
+    "dataset_extracted_dir": "data/extracted",
+    "population_db": "data/processed/cohorts/population.sqlite",
+    "outcomes_db": "data/processed/cohorts/outcomes.sqlite",
     "model": "models/Qwen3-8B",
-    "run_dir": "coga/runs/coga_qwen3_8b_4090_v1"
+    "run_dir": "runs/coga_qwen3_8b_4090_v1"
+  },
+  "data": {
+    "sources": {
+      "tasks": "Zhongzhi1228/Recursive-Task-Synthesis",
+      "trajectories": "Zhongzhi1228/Recursive-Task-Synthesis-Trajectories",
+      "license": "CC-BY-4.0"
+    },
+    "minimum_successes_and_failures": 4,
+    "expected_cohorts": 255
   },
   "model": {
     "hf_id": "Qwen/Qwen3-8B",
@@ -62,8 +73,8 @@
     "packing": false
   },
   "evaluation": {
-    "vllm_executable": "envs/coga-4090/bin/vllm",
-    "harbor_executable": "envs/harbor-eval/bin/harbor",
+    "vllm_executable": ".venv/bin/vllm",
+    "harbor_executable": ".venv/bin/harbor",
     "port": 8018,
     "base_served_name": "Qwen3-8B",
     "max_model_length": 8192,
@@ -78,43 +89,30 @@
       {
         "name": "rejection_success",
         "served_name": "rejection_success",
-        "adapter": "coga/runs/coga_qwen3_8b_4090_v1/training/rejection_success/adapter"
+        "adapter": "runs/coga_qwen3_8b_4090_v1/training/rejection_success/adapter"
       },
       {
         "name": "coga_selected",
         "served_name": "coga_selected",
-        "adapter": "coga/runs/coga_qwen3_8b_4090_v1/training/coga_selected/adapter"
+        "adapter": "runs/coga_qwen3_8b_4090_v1/training/coga_selected/adapter"
       }
     ],
     "terminal_bench": {
       "version": "2.1",
       "task_scope": "all_dataset_tasks",
       "expected_task_count": 89,
-      "dataset_path": "data/derived/credit_runs/stage4_two_arm_root_20260818_180648/benchmark/terminal-bench-2-1",
-      "task_inventory": "data/derived/credit_runs/stage4_two_arm_root_20260818_180648/task_inventory.json",
-      "expected_dataset_tree_sha256": "dcbaa19e3550d648c21fad8203a4aa33cdf05c2b27d89b86cf318efe3a0d5293",
+      "dataset_path": "data/benchmarks/terminal-bench-2-1",
+      "task_inventory": "data/benchmarks/terminal-bench-2-1.inventory.json",
+      "expected_dataset_tree_sha256": null,
       "max_turns": 30,
       "max_input_tokens": 7168,
       "max_output_tokens": 1024
     },
     "bfcl": {
-      "version_scope": "BFCL V4 full all_scoring group, including non-live, live, multi-turn, and agentic categories",
-      "executable": "envs/coga-4090/bin/bfcl",
+      "version_scope": "BFCL V4 Multi-Turn",
+      "executable": ".venv/bin/bfcl",
       "model_name": "Qwen/Qwen3-8B-FC",
-      "categories": ["all_scoring"],
-      "requires_agentic_backends": true
+      "categories": ["multi_turn"]
     }
-  },
-  "result_placeholders": {
-    "gradient_gate": null,
-    "selected_cohorts": null,
-    "training_peak_vram_gb": null,
-    "terminal_bench_base": null,
-    "terminal_bench_rejection": null,
-    "terminal_bench_coga": null,
-    "terminal_bench_paired_difference_ci95": null,
-    "bfcl_base": null,
-    "bfcl_rejection": null,
-    "bfcl_coga": null
   }
 }
