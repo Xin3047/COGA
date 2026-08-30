@@ -5,10 +5,6 @@ pipeline for long-horizon terminal agents. It turns same-task success/failure tr
 pairs into target-only gradient contrasts, validates the signal against seven controls,
 and compares a COGA-selected SFT arm with a rejection-sampling baseline.
 
-This repository is a reproduction guide and does not publish experiment results. It provides
-the code, frozen configuration, data provenance, and commands needed to reproduce the full
-pipeline independently.
-
 ## Pipeline
 
 ```text
