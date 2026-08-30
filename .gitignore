@@ -1,0 +1,52 @@
+# Generated experiment outputs and local artifacts
+runs/
+outputs/
+results/
+artifacts/
+models/
+
+# Python environments, caches, and coverage
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Model and training artifacts
+checkpoint-*/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.parquet
+*.arrow
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs, temporary files, and local secrets
+*.log
+*.out
+*.err
+*.tmp
+*.temp
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Editor and OS metadata
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

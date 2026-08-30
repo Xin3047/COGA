@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "method": "COGA (Contrastive Outcome Gradient Alignment)",
+  "status": "FULL_TRAIN_EVAL_CODE_READY_NOT_RUN",
+  "execution_scope": "FULL_PRODUCTION_ONLY",
+  "seed": 20260828,
+  "paths": {
+    "raw_root": "../raw",
+    "population_db": "../raw/data/derived/credit_runs/local_credit_tournament_root_20260817_173936/population.sqlite",
+    "outcomes_db": "../raw/data/derived/credit_runs/local_credit_tournament_root_20260817_173936/outcomes.sqlite",
+    "model": "models/Qwen3-8B",
+    "run_dir": "coga/runs/coga_qwen3_8b_4090_v1"
+  },
+  "model": {
+    "hf_id": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+    "quantization": "4-bit NF4 with double quantization and BF16 compute",
+    "lora": {
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"]
+    }
+  },
+  "gradient": {
+    "max_length": 4096,
+    "warmup_steps": 128,
+    "warmup_learning_rate": 0.0002,
+    "sketch_dimension": 8192,
+    "sketch_seed": 20260828,
+    "crossfit_folds": 5,
+    "controls": [
+      "real",
+      "reward_shuffle",
+      "turn_shuffle",
+      "cross_cohort_pairing",
+      "length_matched_swap",
+      "bag_of_actions",
+      "random_label",
+      "self_pair_identity"
+    ],
+    "gate": "paired real-minus-strongest-control bootstrap CI95 lower bound > 0"
+  },
+  "selection": {
+    "top_fraction": 0.5,
+    "loss_token_budget": 1000000,
+    "require_gradient_gate": true,
+    "comparison_arm": "rejection_success",
+    "method_arm": "coga_selected"
+  },
+  "training": {
+    "max_length": 4096,
+    "epochs": 1,
+    "learning_rate": 0.0002,
+    "warmup_ratio": 0.03,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 1,
+    "optimizer": "PagedAdamW8bit",
+    "scheduler": "cosine",
+    "save_steps": 250,
+    "target_only_loss": true,
+    "packing": false
+  },
+  "evaluation": {
+    "vllm_executable": "envs/coga-4090/bin/vllm",
+    "harbor_executable": "envs/harbor-eval/bin/harbor",
+    "port": 8018,
+    "base_served_name": "Qwen3-8B",
+    "max_model_length": 8192,
+    "gpu_memory_utilization": 0.88,
+    "service_start_timeout_seconds": 900,
+    "models": [
+      {
+        "name": "base",
+        "served_name": "Qwen3-8B",
+        "adapter": null
+      },
+      {
+        "name": "rejection_success",
+        "served_name": "rejection_success",
+        "adapter": "coga/runs/coga_qwen3_8b_4090_v1/training/rejection_success/adapter"
+      },
+      {
+        "name": "coga_selected",
+        "served_name": "coga_selected",
+        "adapter": "coga/runs/coga_qwen3_8b_4090_v1/training/coga_selected/adapter"
+      }
+    ],
+    "terminal_bench": {
+      "version": "2.1",
+      "task_scope": "all_dataset_tasks",
+      "expected_task_count": 89,
+      "dataset_path": "data/derived/credit_runs/stage4_two_arm_root_20260818_180648/benchmark/terminal-bench-2-1",
+      "task_inventory": "data/derived/credit_runs/stage4_two_arm_root_20260818_180648/task_inventory.json",
+      "expected_dataset_tree_sha256": "dcbaa19e3550d648c21fad8203a4aa33cdf05c2b27d89b86cf318efe3a0d5293",
+      "max_turns": 30,
+      "max_input_tokens": 7168,
+      "max_output_tokens": 1024
+    },
+    "bfcl": {
+      "version_scope": "BFCL V4 full all_scoring group, including non-live, live, multi-turn, and agentic categories",
+      "executable": "envs/coga-4090/bin/bfcl",
+      "model_name": "Qwen/Qwen3-8B-FC",
+      "categories": ["all_scoring"],
+      "requires_agentic_backends": true
+    }
+  },
+  "result_placeholders": {
+    "gradient_gate": null,
+    "selected_cohorts": null,
+    "training_peak_vram_gb": null,
+    "terminal_bench_base": null,
+    "terminal_bench_rejection": null,
+    "terminal_bench_coga": null,
+    "terminal_bench_paired_difference_ci95": null,
+    "bfcl_base": null,
+    "bfcl_rejection": null,
+    "bfcl_coga": null
+  }
+}
